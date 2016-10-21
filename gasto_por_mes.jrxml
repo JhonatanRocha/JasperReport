@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="gasto_por_mes" language="groovy" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e095eea3-af8f-44c5-95a7-d142abc311cb">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<queryString language="SQL">
+	<parameter name="DATA_INI" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("01/08/2012")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_FIM" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("31/08/2012")]]></defaultValueExpression>
+	</parameter>
+	<queryString>
 		<![CDATA[SELECT
      movimentacoes.`id` AS id,
      movimentacoes.`data` AS data,
@@ -17,6 +23,8 @@ FROM
      INNER JOIN `categorias` categorias ON movimentacoes.`categoria_id` = categorias.`id`
 WHERE
      tipoMovimentacao LIKE 'SAIDA'
+	AND
+     data BETWEEN $P{DATA_INI} AND $P{DATA_FIM}
 ORDER BY
      contas.`titular` ASC,
      movimentacoes.`data` ASC]]>
@@ -50,12 +58,37 @@ ORDER BY
 	</variable>
 	<group name="contaTitular">
 		<groupExpression><![CDATA[$F{contaTitular}]]></groupExpression>
+		<groupHeader>
+			<band height="22">
+				<textField pattern="">
+					<reportElement mode="Opaque" x="0" y="0" width="572" height="22" backcolor="#CCCCCC" uuid="d9610cd2-0e24-4a85-a347-affde680f9f1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["TITULAR DA CONTA: " + $F{contaTitular}.toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
 		<groupFooter>
 			<band height="20">
-				<textField>
+				<rectangle>
+					<reportElement mode="Opaque" x="0" y="0" width="572" height="20" backcolor="#CCCCCC" uuid="aa3260ec-9aab-452e-bb2b-33389289508f"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="¤ #,##0.00">
 					<reportElement x="396" y="0" width="100" height="20" uuid="90bfa83f-1647-4917-b3e7-30ac9a23aa21"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$V{valor_3}]]></textFieldExpression>
 				</textField>
+				<staticText>
+					<reportElement x="260" y="0" width="136" height="20" uuid="a9a83801-fd93-4054-8082-4a79c171e8b6"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL DO TITULAR:]]></text>
+				</staticText>
 			</band>
 		</groupFooter>
 	</group>
@@ -63,10 +96,24 @@ ORDER BY
 		<groupExpression><![CDATA[$F{data}.getMonth()]]></groupExpression>
 		<groupFooter>
 			<band height="20">
-				<textField>
+				<rectangle>
+					<reportElement mode="Opaque" x="0" y="0" width="572" height="20" backcolor="#CCCCCC" uuid="7afbd986-9bf4-4632-b163-d78682826e05"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="¤ #,##0.00">
 					<reportElement x="396" y="0" width="100" height="20" uuid="6b73984c-4cfd-40cb-8e5f-d042e9b0aa0d"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$V{valor_4}]]></textFieldExpression>
 				</textField>
+				<staticText>
+					<reportElement x="260" y="0" width="136" height="20" uuid="5b6687a1-cb9b-464d-9738-a6066e0ae4bf"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL MENSAL:]]></text>
+				</staticText>
 			</band>
 		</groupFooter>
 	</group>
@@ -75,9 +122,15 @@ ORDER BY
 	</background>
 	<title>
 		<band height="35" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="572" height="35" backcolor="#CCCCCC" uuid="85e887f9-20ed-4710-acaf-455ef6c7c700"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
 			<staticText>
 				<reportElement x="211" y="0" width="142" height="35" uuid="31bccc31-d84e-4ae0-8d09-f6fd3985c319"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Gastos por Conta]]></text>
@@ -88,52 +141,45 @@ ORDER BY
 		<band height="20" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="0" width="85" height="20" uuid="6c520d63-a766-4c9d-b23f-369cf71d00c7"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[categoriasNome]]></text>
+				<text><![CDATA[CATEGORIA]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="85" y="0" width="66" height="20" uuid="99e50a40-957f-4757-ab01-3011917e01a3"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[id]]></text>
+				<text><![CDATA[ID]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="151" y="0" width="60" height="20" uuid="1f23af63-bad9-4ec6-91e3-05f7de558225"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[data]]></text>
+				<text><![CDATA[DATA]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="211" y="0" width="100" height="20" uuid="d830066d-5084-423c-89bf-ca31a0fec648"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[descricao]]></text>
+				<text><![CDATA[DESCRICAO]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="311" y="0" width="85" height="20" uuid="d74bfdc2-6259-4157-b3bc-39be6fd0f46e"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[tipo]]></text>
+				<text><![CDATA[TIPO]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="396" y="0" width="67" height="20" uuid="c20c6dcb-bf07-4e87-982d-c4f62209a2ef"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[valor]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="463" y="0" width="100" height="20" uuid="e1f4a6ac-4368-4154-bb04-b07c8d73ee40"/>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[contaTitular]]></text>
+				<text><![CDATA[VALOR]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -141,31 +187,33 @@ ORDER BY
 		<band height="20" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="85" height="20" uuid="db333ccc-182b-4d9f-af4d-47493b9afba1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{categoriasNome}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="85" y="0" width="66" height="20" uuid="278f53a8-d702-458c-b542-5f3153f825e1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="dd/MM/yy">
 				<reportElement x="151" y="0" width="60" height="20" uuid="7a46d2c4-2939-4d1c-b0b7-15683c5edc16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="211" y="0" width="100" height="20" uuid="58825618-d127-48c5-b8db-906b89c77bfb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="311" y="0" width="85" height="20" uuid="5db86a1f-4319-4aeb-8684-a9d74cb4b941"/>
-				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tipo}.substring( 0, 1 )]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="396" y="0" width="67" height="20" uuid="cedb8aed-ed6a-4404-a46e-050f39fb846e"/>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="396" y="0" width="100" height="20" uuid="cedb8aed-ed6a-4404-a46e-050f39fb846e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="463" y="0" width="100" height="20" uuid="1c1b3d56-c32f-4c1d-8563-2bb46f9db315"/>
-				<textFieldExpression><![CDATA[$F{contaTitular}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -174,7 +222,7 @@ ORDER BY
 			<textField>
 				<reportElement x="443" y="0" width="80" height="20" uuid="06f90cef-9b47-45bf-9e67-47646e73ba30"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="523" y="0" width="40" height="20" uuid="88bcbce0-2608-475c-b1ed-5e6c87d40c76"/>
@@ -188,10 +236,18 @@ ORDER BY
 	</pageFooter>
 	<summary>
 		<band height="20" splitType="Stretch">
-			<textField>
-				<reportElement x="396" y="0" width="89" height="20" uuid="a538ab49-6530-46fc-9b07-c266c469a53e"/>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="396" y="0" width="100" height="20" uuid="a538ab49-6530-46fc-9b07-c266c469a53e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$V{valor_2}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="260" y="0" width="136" height="20" uuid="4d513773-fbd0-4a82-a750-8486f50d936f"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL DO RELATORIO:]]></text>
+			</staticText>
 		</band>
 	</summary>
 </jasperReport>
