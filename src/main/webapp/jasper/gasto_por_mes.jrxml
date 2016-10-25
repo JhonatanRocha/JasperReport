@@ -32,7 +32,7 @@ GROUP BY
 		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").parse("31/08/2012")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\rochaj2\\Documents\\workspace\\jhol\\JasperReport\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["C:\\Users\\rochaj2\\Documents\\workspace\\jhol\\JasperReport\\src\\main\\webapp\\jasper\\"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
